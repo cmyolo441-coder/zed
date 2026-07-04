@@ -112,6 +112,15 @@ func (a *Agent) rebuildSystem() {
 // SetSnapshots attaches an undo/redo manager.
 func (a *Agent) SetSnapshots(m *snapshot.Manager) { a.snapshots = m }
 
+// SetClient swaps the LLM client at runtime. Used by /login so a freshly
+// entered API key / endpoint / model takes effect immediately without a
+// restart.
+func (a *Agent) SetClient(c llm.Client) {
+	if c != nil {
+		a.client = c
+	}
+}
+
 // SetPolicy attaches the security policy.
 func (a *Agent) SetPolicy(p *security.Policy) { a.policy = p }
 

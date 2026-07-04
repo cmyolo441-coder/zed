@@ -154,6 +154,9 @@ func mergeFile(dst, src *Config) {
 	if src.BaseURL != "" {
 		dst.BaseURL = src.BaseURL
 	}
+	if src.AuthHeader != "" {
+		dst.AuthHeader = src.AuthHeader
+	}
 	if src.MaxTokens != 0 {
 		dst.MaxTokens = src.MaxTokens
 	}
@@ -234,11 +237,12 @@ func (c *Config) Save() error {
 	}
 	// Only save persistent fields (skip runtime-only fields).
 	snapshot := &Config{
-		Provider:  c.Provider,
-		Model:     c.Model,
-		BaseURL:   c.BaseURL,
-		APIKey:    c.APIKey,
-		MaxTokens: c.MaxTokens,
+		Provider:   c.Provider,
+		Model:      c.Model,
+		BaseURL:    c.BaseURL,
+		APIKey:     c.APIKey,
+		AuthHeader: c.AuthHeader,
+		MaxTokens:  c.MaxTokens,
 		MaxSteps:  c.MaxSteps,
 		Theme:     c.Theme,
 		AutoApply: c.AutoApply,
@@ -249,6 +253,19 @@ func (c *Config) Save() error {
 		return err
 	}
 	return os.WriteFile(filepath.Join(cfgDir, "config.json"), data, 0o644)
+}
+
+// SetCustomOpenAICompatible configures the agent to talk to an arbitrary
+// OpenAI-compatible endpoint with a user-supplied API key, base URL and model.
+// This is what /login uses for the "custom" provider option.
+func SetCustomOpenAICompatible(cfg *Config, apiKey, baseURL, model string) {
+	cfg.Provider = "openai"
+	cfg.APIKey = apiKey
+	cfg.BaseURL = baseURL
+	cfg.AuthHeader = "" // default Authorization: Bearer
+	if model != "" {
+		cfg.Model = model
+	}
 }
 
 func firstNonEmpty(vals ...string) string {

@@ -82,6 +82,29 @@ type Model struct {
 	nextApprovalID  int
 	toolEvents      []toolActivity
 	toolStarted     map[string]time.Time
+
+	// /login multi-step flow state. When loginStep != "", the next Enter
+	// submits the typed text as the value for the current login step instead
+	// of running a prompt. This lets us capture API keys / base URLs / model
+	// names interactively — like Claude Code's /login.
+	loginStep  string // "" = inactive; otherwise one of loginStep* constants
+	loginDraft loginDraft
+}
+
+// loginStep* are the stages of the /login flow.
+const (
+	loginStepProvider = "provider" // choose: nvidia / opencode / custom
+	loginStepAPIKey   = "apikey"
+	loginStepBaseURL  = "baseurl"
+	loginStepModel    = "model"
+)
+
+// loginDraft accumulates the values collected during a /login flow.
+type loginDraft struct {
+	provider string // nvidia | opencode | custom
+	apiKey   string
+	baseURL  string
+	model    string
 }
 
 // NewModel wires up the TUI with an agent and all enterprise subsystems.
@@ -211,6 +234,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Quit
 		case tea.KeyEsc:
+			// Cancel an in-progress /login flow.
+			if m.loginStep != "" {
+				m.loginStep = ""
+				m.loginDraft = loginDraft{}
+				m.input.Reset()
+				m.appendLine(m.theme.Dim.Render("✋ /login cancelled.") + "\n")
+				return m, nil
+			}
 			if m.streaming {
 				// Stop the running agent turn — like Claude Code / Cursor.
 				if m.cancel != nil {
@@ -379,6 +410,12 @@ func (m Model) submit() (tea.Model, tea.Cmd) {
 	prompt := strings.TrimSpace(m.input.Value())
 	if prompt == "" {
 		return m, nil
+	}
+
+	// /login multi-step capture: when a login step is active, the typed text
+	// is captured as the value for that step (not run as a prompt).
+	if m.loginStep != "" {
+		return m.captureLoginStep(prompt)
 	}
 
 	// slash commands
@@ -865,6 +902,13 @@ func (m Model) handleSlash(prompt string) (tea.Model, tea.Cmd) {
 		m.appendLine(m.renderReplay(arg) + "\n")
 		return m, nil
 
+	case "/login":
+		m.input.Reset()
+		m.loginStep = loginStepProvider
+		m.loginDraft = loginDraft{}
+		m.appendLine(m.renderLoginPrompt())
+		return m, nil
+
 	case "/auth":
 		m.input.Reset()
 		m.appendLine(m.renderAuthUI() + "\n")
@@ -1036,6 +1080,7 @@ func (m Model) handleSlash(prompt string) (tea.Model, tea.Cmd) {
 			"  /normal-mode     deactivate cybersecurity mode\n" +
 			"  /model <name>    switch model\n" +
 			"  /models          list available models\n" +
+			"  /login           set API key / provider interactively (nvidia · opencode · custom)\n" +
 			"  /undo /redo      revert or reapply file changes\n" +
 			"  /history         list file changes\n" +
 			"  /save            save this session\n" +

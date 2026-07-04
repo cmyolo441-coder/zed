@@ -50,8 +50,11 @@ func run() error {
 		return err
 	}
 
+	// No API-key gate here: the agent opens immediately (like Claude Code /
+	// Codex). If no key is configured, the user runs /login inside the TUI to
+	// set one. We only warn at startup — we never block the UI.
 	if cfg.APIKey == "" {
-		return fmt.Errorf("no API key set (export ZED_API_KEY or ANTHROPIC_API_KEY / OPENAI_API_KEY)")
+		fmt.Fprintln(os.Stderr, "zed: no API key configured — run /login inside the agent to set one.")
 	}
 
 	// Structured file logging (never writes to the TUI's terminal).
