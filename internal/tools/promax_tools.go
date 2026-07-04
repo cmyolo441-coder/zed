@@ -1,0 +1,19 @@
+package tools
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
+
+	"github.com/gjkjk/zed/internal/promax"
+)
+
+type ProMaxTool struct{ WorkDir, ToolName string }
+func (t *ProMaxTool) Name() string { return t.ToolName }
+func (t *ProMaxTool) Description() string { return "BITTU CHAUHAN Agent OS Pro Max capability: "+t.ToolName }
+func (t *ProMaxTool) RequiresApproval() bool { switch t.ToolName{case "patch_queue","project_generator_pro","web_ui_exporter","plugin_builder","agent_self_test_harness","job_manager","workspace_sync","kernel_upgrade_planner","replay_engine": return true}; return false }
+func (t *ProMaxTool) Schema() map[string]any { return map[string]any{"type":"object","properties":map[string]any{"action":map[string]any{"type":"string"},"query":map[string]any{"type":"string"},"goal":map[string]any{"type":"string"},"name":map[string]any{"type":"string"},"text":map[string]any{"type":"string"},"path":map[string]any{"type":"string"},"command":map[string]any{"type":"string"},"id":map[string]any{"type":"integer"},"apply":map[string]any{"type":"boolean"},"stack":map[string]any{"type":"string"}}} }
+func (t *ProMaxTool) Execute(_ context.Context,args string)(string,error){var a struct{Action string `json:"action"`; Query string `json:"query"`; Goal string `json:"goal"`; Name string `json:"name"`; Text string `json:"text"`; Path string `json:"path"`; Command string `json:"command"`; ID int `json:"id"`; Apply bool `json:"apply"`; Stack string `json:"stack"`}; if strings.TrimSpace(args)!=""&&strings.TrimSpace(args)!="{}"{if err:=parseArgs(args,&a);err!=nil{return "",err}}; var r promax.Result; var err error; switch t.ToolName{case "agent_hypervisor": r,err=promax.AgentHypervisor(t.WorkDir,first(a.Goal,a.Text,a.Query)); case "memory_graph": r,err=promax.MemoryGraphTool(t.WorkDir,a.Action,a.Query); case "codebase_map": r,err=promax.CodebaseMapTool(t.WorkDir); case "neural_workspace": r,err=promax.NeuralWorkspace(t.WorkDir); case "merge_engine": r,err=promax.MergeEngine(t.WorkDir,a.Apply); case "patch_queue": r,err=promax.PatchQueue(t.WorkDir,a.Action,a.Name,a.Text,a.ID); case "timeline_db": r,err=promax.TimelineDB(t.WorkDir,a.Action,a.Name,first(a.Text,a.Query)); case "replay_engine": r,err=promax.ReplayEngine(t.WorkDir,first(a.Name,a.Query)); case "artifact_browser": r,err=promax.ArtifactBrowser(t.WorkDir); case "project_generator_pro": r,err=promax.ProjectGeneratorPro(t.WorkDir,first(a.Name,a.Goal),a.Stack); case "preview_server": r,err=promax.PreviewServer(t.WorkDir,a.Path); case "web_ui_exporter": r,err=promax.WebUIExporter(t.WorkDir); case "plugin_builder": r,err=promax.PluginBuilder(t.WorkDir,first(a.Name,a.Query),a.Text); case "agent_self_test_harness": r,err=promax.AgentSelfTestHarness(t.WorkDir); case "benchmark_lab": r,err=promax.BenchmarkLab(t.WorkDir); case "tool_reliability_score": r,err=promax.ToolReliabilityScore(t.WorkDir); case "tool_auto_repair": r,err=promax.ToolAutoRepair(t.WorkDir,first(a.Text,args)); case "job_manager": r,err=promax.JobManager(t.WorkDir,a.Action,a.Command,a.ID); case "workspace_sync": r,err=promax.WorkspaceSync(t.WorkDir,a.Path); case "kernel_upgrade_planner": r,err=promax.KernelUpgradePlanner(t.WorkDir); default: return "",fmt.Errorf("unknown promax tool %s",t.ToolName)}; if err!=nil{return "",err}; if a.Action=="raw"{b,_:=json.Marshal(r.Data); return string(b),nil}; return r.Text(),nil}
+
+func NewProMaxTools(workDir string) []Tool { names:=[]string{"agent_hypervisor","memory_graph","codebase_map","neural_workspace","merge_engine","patch_queue","timeline_db","replay_engine","artifact_browser","project_generator_pro","preview_server","web_ui_exporter","plugin_builder","agent_self_test_harness","benchmark_lab","tool_reliability_score","tool_auto_repair","job_manager","workspace_sync","kernel_upgrade_planner"}; out:=make([]Tool,0,len(names)); for _,n:=range names{out=append(out,&ProMaxTool{WorkDir:workDir,ToolName:n})}; return out }

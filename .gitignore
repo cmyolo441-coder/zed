@@ -1,0 +1,35 @@
+# ===== Build artifacts / binaries =====
+zed.exe
+zed.exe~
+zed-test.exe
+/zed
+/dist/
+*.exe~
+
+# ===== Config / secrets (kabhi commit mat karo) =====
+config.json
+*.key
+*.pem
+.env
+.env.*
+
+# ===== ZED runtime files (agent apne aap banata hai) =====
+.zed-*.json
+.zed-*.jsonl
+.zed-prompts/
+.zed-skills/
+.zed-macros/
+.zed-knowledge/
+.zed-missions.json
+.zed-memory-graph.json
+.zed-workspace-state.json
+.zed-timeline.jsonl
+.zed-patch-queue.json
+
+# ===== OS / editor junk =====
+.DS_Store
+Thumbs.db
+*.log
+
+# ===== Claude Code local files =====
+.claude/
