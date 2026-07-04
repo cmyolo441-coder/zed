@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/llm"
-	"github.com/gjkjk/zed/internal/swarm"
+	"github.com/cmyolo441-coder/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/swarm"
 )
 
 // SpawnSwarm is a tool that lets the agent spawn parallel sub-agents.

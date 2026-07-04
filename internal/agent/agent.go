@@ -10,14 +10,14 @@ import (
 	"sync"
 	"time"
 
-	appctx "github.com/gjkjk/zed/internal/context"
-	"github.com/gjkjk/zed/internal/config"
-	"github.com/gjkjk/zed/internal/llm"
-	"github.com/gjkjk/zed/internal/logging"
-	"github.com/gjkjk/zed/internal/retry"
-	"github.com/gjkjk/zed/internal/security"
-	"github.com/gjkjk/zed/internal/snapshot"
-	"github.com/gjkjk/zed/internal/tools"
+	appctx "github.com/cmyolo441-coder/zed/internal/context"
+	"github.com/cmyolo441-coder/zed/internal/config"
+	"github.com/cmyolo441-coder/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/logging"
+	"github.com/cmyolo441-coder/zed/internal/retry"
+	"github.com/cmyolo441-coder/zed/internal/security"
+	"github.com/cmyolo441-coder/zed/internal/snapshot"
+	"github.com/cmyolo441-coder/zed/internal/tools"
 )
 
 // EventKind classifies an event streamed out of the agent.

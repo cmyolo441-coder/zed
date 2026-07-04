@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/profiler"
+	"github.com/cmyolo441-coder/zed/internal/profiler"
 )
 
 type ParseBenchmark struct{}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/memory"
+	"github.com/cmyolo441-coder/zed/internal/memory"
 )
 
 // MemoryRemember is a tool to store persistent memories.

@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/config"
+	"github.com/cmyolo441-coder/zed/internal/config"
 )
 
 // CyberSecurityPrompt builds a system prompt specialized for cybersecurity

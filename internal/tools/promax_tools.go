@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/promax"
+	"github.com/cmyolo441-coder/zed/internal/promax"
 )
 
 type ProMaxTool struct{ WorkDir, ToolName string }

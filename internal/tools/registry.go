@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/llm"
 )
 
 // Registry holds all available tools and dispatches calls to them.

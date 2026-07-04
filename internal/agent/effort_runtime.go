@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	appctx "github.com/gjkjk/zed/internal/context"
-	"github.com/gjkjk/zed/internal/config"
-	"github.com/gjkjk/zed/internal/llm"
+	appctx "github.com/cmyolo441-coder/zed/internal/context"
+	"github.com/cmyolo441-coder/zed/internal/config"
+	"github.com/cmyolo441-coder/zed/internal/llm"
 )
 
 func effortBudget(model string, effort config.Effort) appctx.Budget {

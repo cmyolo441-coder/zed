@@ -10,8 +10,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/gjkjk/zed/internal/diff"
-	"github.com/gjkjk/zed/internal/snapshot"
+	"github.com/cmyolo441-coder/zed/internal/diff"
+	"github.com/cmyolo441-coder/zed/internal/snapshot"
 )
 
 // resolvePath keeps tool access within the working directory tree. It is

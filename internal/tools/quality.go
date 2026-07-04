@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/quality"
+	"github.com/cmyolo441-coder/zed/internal/quality"
 )
 
 // CodeQuality is a tool that runs static analysis and security checks.

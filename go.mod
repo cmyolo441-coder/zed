@@ -1,4 +1,4 @@
-module github.com/gjkjk/zed
+module github.com/cmyolo441-coder/zed
 
 go 1.23
 

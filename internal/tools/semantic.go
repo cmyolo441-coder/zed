@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/index"
+	"github.com/cmyolo441-coder/zed/internal/index"
 )
 
 // SemanticSearch is a concept-aware code search tool.

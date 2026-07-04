@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gjkjk/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/llm"
 )
 
 // Session is a saved conversation with metadata.

@@ -41,7 +41,7 @@ func SARIF(root string) ([]byte, error) {
 	for id, f := range ruleMap {
 		rules = append(rules, sarifRule{ID: id, Name: id, ShortDescription: sarifText{Text: f.Message}, Help: sarifText{Text: f.Remediation}, Properties: map[string]any{"severity": strings.ToUpper(f.Severity)}})
 	}
-	log := sarifLog{Version: "2.1.0", Schema: "https://json.schemastore.org/sarif-2.1.0.json", Runs: []sarifRun{{Tool: sarifTool{Driver: sarifDriver{Name: "ZED Enterprise Gate", InformationURI: "https://github.com/gjkjk/zed", Rules: rules}}, Results: results}}}
+	log := sarifLog{Version: "2.1.0", Schema: "https://json.schemastore.org/sarif-2.1.0.json", Runs: []sarifRun{{Tool: sarifTool{Driver: sarifDriver{Name: "ZED Enterprise Gate", InformationURI: "https://github.com/cmyolo441-coder/zed", Rules: rules}}, Results: results}}}
 	return json.MarshalIndent(log, "", "  ")
 }
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gjkjk/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/llm"
 )
 
 // SubTask is a unit of work assigned to a sub-agent.

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/ast"
+	"github.com/cmyolo441-coder/zed/internal/ast"
 )
 
 // AnalyzeCode is a tool that runs AST-based code analysis on a file or directory.

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gjkjk/zed/internal/config"
+	"github.com/cmyolo441-coder/zed/internal/config"
 )
 
 const anthropicVersion = "2023-06-01"

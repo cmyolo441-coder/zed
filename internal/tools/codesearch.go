@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/index"
+	"github.com/cmyolo441-coder/zed/internal/index"
 )
 
 // CodeSearch exposes the codebase index to the agent for relevance-ranked file

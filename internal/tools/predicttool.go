@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/predict"
+	"github.com/cmyolo441-coder/zed/internal/predict"
 )
 
 type PredictSuggest struct {

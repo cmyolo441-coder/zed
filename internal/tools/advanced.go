@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/diagram"
-	"github.com/gjkjk/zed/internal/fuzz"
-	"github.com/gjkjk/zed/internal/meta"
-	"github.com/gjkjk/zed/internal/reason"
-	"github.com/gjkjk/zed/internal/selftest"
-	"github.com/gjkjk/zed/internal/vcs"
+	"github.com/cmyolo441-coder/zed/internal/diagram"
+	"github.com/cmyolo441-coder/zed/internal/fuzz"
+	"github.com/cmyolo441-coder/zed/internal/meta"
+	"github.com/cmyolo441-coder/zed/internal/reason"
+	"github.com/cmyolo441-coder/zed/internal/selftest"
+	"github.com/cmyolo441-coder/zed/internal/vcs"
 )
 
 // --- Self-Analysis Tool ---

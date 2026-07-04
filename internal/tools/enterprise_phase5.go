@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/gjkjk/zed/internal/enterprise"
+	"github.com/cmyolo441-coder/zed/internal/enterprise"
 )
 
 type EnterpriseTaintAnalysis struct{ WorkDir string }

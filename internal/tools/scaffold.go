@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/scaffold"
+	"github.com/cmyolo441-coder/zed/internal/scaffold"
 )
 
 // Scaffold is a tool that generates code from templates.

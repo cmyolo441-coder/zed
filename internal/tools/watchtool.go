@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/watcher"
+	"github.com/cmyolo441-coder/zed/internal/watcher"
 )
 
 type WatcherStatus struct {

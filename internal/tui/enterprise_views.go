@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gjkjk/zed/internal/enterprise"
-	"github.com/gjkjk/zed/internal/agentos"
-	"github.com/gjkjk/zed/internal/mission"
-	"github.com/gjkjk/zed/internal/promax"
+	"github.com/cmyolo441-coder/zed/internal/enterprise"
+	"github.com/cmyolo441-coder/zed/internal/agentos"
+	"github.com/cmyolo441-coder/zed/internal/mission"
+	"github.com/cmyolo441-coder/zed/internal/promax"
 )
 
 type planStep struct { ID int; Title, Risk, Command, Rollback string; Approval bool; Done bool }

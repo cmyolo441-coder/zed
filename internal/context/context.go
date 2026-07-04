@@ -7,7 +7,7 @@ package context
 import (
 	"strings"
 
-	"github.com/gjkjk/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/llm"
 )
 
 // Budget describes the token limits for a conversation window.

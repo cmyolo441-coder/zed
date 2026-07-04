@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/metrics"
+	"github.com/cmyolo441-coder/zed/internal/metrics"
 )
 
 type CodeMetrics struct {

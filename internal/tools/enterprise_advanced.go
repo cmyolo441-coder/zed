@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/enterprise"
+	"github.com/cmyolo441-coder/zed/internal/enterprise"
 )
 
 type EnterpriseAPISurface struct{ WorkDir string }

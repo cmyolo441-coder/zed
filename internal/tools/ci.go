@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gjkjk/zed/internal/ci"
+	"github.com/cmyolo441-coder/zed/internal/ci"
 )
 
 // CIPipeline is a tool that runs the full CI pipeline (lint → build → test → security).

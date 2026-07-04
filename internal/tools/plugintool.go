@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/plugin"
+	"github.com/cmyolo441-coder/zed/internal/plugin"
 )
 
 type PluginExecute struct {

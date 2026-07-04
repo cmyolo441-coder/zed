@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gjkjk/zed/internal/dist"
+	"github.com/cmyolo441-coder/zed/internal/dist"
 )
 
 type DistStatus struct {

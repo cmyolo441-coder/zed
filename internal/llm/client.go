@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gjkjk/zed/internal/cache"
-	"github.com/gjkjk/zed/internal/config"
+	"github.com/cmyolo441-coder/zed/internal/cache"
+	"github.com/cmyolo441-coder/zed/internal/config"
 )
 
 // Client is a provider-agnostic LLM interface. Implementations stream events

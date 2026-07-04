@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/planner"
+	"github.com/cmyolo441-coder/zed/internal/planner"
 )
 
 // DecomposeTask is a tool that helps the agent break complex goals into

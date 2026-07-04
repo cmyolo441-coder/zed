@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/mission"
+	"github.com/cmyolo441-coder/zed/internal/mission"
 )
 
 type MissionControl struct{ WorkDir string }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/snapshot"
+	"github.com/cmyolo441-coder/zed/internal/snapshot"
 )
 
 // SnapshotHistory is a tool to view file change history and diffs.

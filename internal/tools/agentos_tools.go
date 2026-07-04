@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gjkjk/zed/internal/agentos"
+	"github.com/cmyolo441-coder/zed/internal/agentos"
 )
 
 type AgentOSTool struct{ WorkDir, ToolName string }

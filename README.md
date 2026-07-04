@@ -2,17 +2,36 @@
 
 ## Install
 
-**Option A — `go install` (Go users ke liye sabse easy):**
+**Sabse aasaan — ek line (Go ki zaroorat NAHI, seedha binary install):**
+
+Linux / macOS:
+```bash
+curl -fsSL https://raw.githubusercontent.com/cmyolo441-coder/zed/main/install.sh | bash
+```
+
+Windows (PowerShell):
+```powershell
+irm https://raw.githubusercontent.com/cmyolo441-coder/zed/main/install.ps1 | iex
+```
+
+Bas! `zed` command install ho jayegi (bilkul Claude Code / Codex jaisa). Naya terminal khol ke `zed` type karo.
+
+---
+
+<details>
+<summary>Doosre tareeke (optional)</summary>
+
+**Option A — `go install` (Go users ke liye):**
 
 ```bash
-go install github.com/gjkjk/zed/cmd/zed@latest
+go install github.com/cmyolo441-coder/zed/cmd/zed@latest
 ```
 
 Iske baad `zed` command kahin se bhi chalega (agar `$GOPATH/bin` ya `$HOME/go/bin` PATH me hai).
 
-**Option B — Ready binary download karo (Go install ki zaroorat nahi):**
+**Option B — Ready binary manually download karo:**
 
-1. [Releases page](https://github.com/gjkjk/zed/releases) par jao.
+1. [Releases page](https://github.com/cmyolo441-coder/zed/releases) par jao.
 2. Apne OS ka binary download karo:
    - Windows: `zed-windows-amd64.exe`
    - Linux: `zed-linux-amd64` (ya `zed-linux-arm64`)
@@ -29,6 +48,8 @@ Iske baad `zed` command kahin se bhi chalega (agar `$GOPATH/bin` ya `$HOME/go/bi
 export ZED_API_KEY="your-key"   # Windows PowerShell: $env:ZED_API_KEY="your-key"
 zed
 ```
+
+</details>
 
 ---
 
