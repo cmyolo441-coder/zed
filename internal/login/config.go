@@ -9,10 +9,11 @@ import (
 
 // Config holds the values collected during the login flow.
 type Config struct {
-	Provider string `json:"provider"`
-	APIKey   string `json:"api_key"`
-	BaseURL  string `json:"base_url"`
-	Model    string `json:"model"`
+	Provider  string `json:"provider"`
+	APIKey    string `json:"api_key"`
+	BaseURL   string `json:"base_url"`
+	Model     string `json:"model"`
+	AccountID string `json:"account_id,omitempty"` // Cloudflare only
 }
 
 // ConfigPath returns the path to ~/.config/zed/config.json.
@@ -43,6 +44,9 @@ func Save(cfg *Config) error {
 	}
 	if cfg.Model != "" {
 		existing["model"] = cfg.Model
+	}
+	if cfg.AccountID != "" {
+		existing["account_id"] = cfg.AccountID
 	}
 	existing["auth_header"] = ""
 
@@ -93,6 +97,12 @@ var Providers = []ProviderInfo{
 		Description: "OpenCode zen endpoint — free models",
 		BaseURL:     "https://opencode.ai/zen/v1/chat/completions",
 		Models:      []string{"mimo-v2.5-free", "deepseek-v4-flash-free", "big-pickle"},
+	},
+	{
+		Name:        "cloudflare",
+		Description: "Cloudflare Workers AI — GLM-5.2, Kimi K2.7 Code",
+		BaseURL:     "https://api.cloudflare.com/client/v4/accounts/ACCOUNT_ID/ai/v1/chat/completions",
+		Models:      []string{"@cf/zai-org/glm-5.2", "@cf/moonshotai/kimi-k2.7-code"},
 	},
 	{
 		Name:        "custom",

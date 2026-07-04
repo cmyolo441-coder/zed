@@ -2,8 +2,10 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // DefaultBaseURL is the OpenAI-compatible endpoint ZED talks to by default.
@@ -37,6 +39,10 @@ var KnownModels = map[string]ModelInfo{
 	"deepseek-ai/deepseek-v4-pro": {Name: "deepseek-ai/deepseek-v4-pro", MaxTokens: 1000000, PricePer1M: 0.0, BaseURL: "https://integrate.api.nvidia.com/v1/chat/completions", APIKey: "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"},
 	// Xiaomi MiMo (https://api.xiaomimimo.com/v1) — uses api-key header, not Bearer
 	"mimo-v2.5-pro": {Name: "mimo-v2.5-pro", MaxTokens: 1000000, PricePer1M: 0.0, BaseURL: "https://api.xiaomimimo.com/v1/chat/completions", APIKey: "sk-s7y2vork2snqeu6qsdh8wbjt8yplu9ykdwem9kky72881zda", AuthHeader: "api-key"},
+	// Cloudflare Workers AI — https://api.cloudflare.com/client/v4/accounts/{id}/ai/v1
+	// API key + account ID loaded from CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID env vars.
+	"@cf/zai-org/glm-5.2":          {Name: "@cf/zai-org/glm-5.2", MaxTokens: 128000, PricePer1M: 0.0},
+	"@cf/moonshotai/kimi-k2.7-code": {Name: "@cf/moonshotai/kimi-k2.7-code", MaxTokens: 262144, PricePer1M: 0.0},
 }
 
 // AvailableModels lists the models supported out of the box.
@@ -51,6 +57,9 @@ var AvailableModels = []string{
 	"deepseek-ai/deepseek-v4-pro",
 	// Xiaomi MiMo models
 	"mimo-v2.5-pro",
+	// Cloudflare Workers AI models
+	"@cf/zai-org/glm-5.2",
+	"@cf/moonshotai/kimi-k2.7-code",
 }
 
 // LookupModel returns model metadata, falling back to a sensible default.
@@ -118,6 +127,16 @@ func Load() (*Config, error) {
 		c.BaseURL = info.BaseURL
 		c.APIKey = info.APIKey
 		c.AuthHeader = info.AuthHeader
+	} else if strings.HasPrefix(c.Model, "@cf/") {
+		// Cloudflare Workers AI: assemble BaseURL from env vars at runtime.
+		cfToken := os.Getenv("CLOUDFLARE_API_TOKEN")
+		cfAcct := os.Getenv("CLOUDFLARE_ACCOUNT_ID")
+		if cfToken != "" && cfAcct != "" {
+			c.BaseURL = fmt.Sprintf("https://api.cloudflare.com/client/v4/accounts/%s/ai/v1/chat/completions", cfAcct)
+			c.APIKey = cfToken
+			c.Provider = "openai"
+			c.AuthHeader = ""
+		}
 	} else {
 		// For default-endpoint models, the key comes from env/default — never a
 		// provider-specific key (e.g. nvapi-…) left over in the saved config.
@@ -191,6 +210,16 @@ func ApplyModel(cfg *Config, modelName string) {
 		cfg.AuthHeader = info.AuthHeader
 		if info.APIKey != "" {
 			cfg.APIKey = info.APIKey
+		}
+	} else if strings.HasPrefix(modelName, "@cf/") {
+		// Cloudflare Workers AI: assemble from env vars.
+		cfToken := os.Getenv("CLOUDFLARE_API_TOKEN")
+		cfAcct := os.Getenv("CLOUDFLARE_ACCOUNT_ID")
+		if cfToken != "" && cfAcct != "" {
+			cfg.BaseURL = fmt.Sprintf("https://api.cloudflare.com/client/v4/accounts/%s/ai/v1/chat/completions", cfAcct)
+			cfg.APIKey = cfToken
+			cfg.Provider = "openai"
+			cfg.AuthHeader = ""
 		}
 	} else {
 		// Reset endpoint AND key to env/default for models without overrides.

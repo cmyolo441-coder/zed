@@ -93,19 +93,21 @@ type Model struct {
 
 // loginStep* are the stages of the /login flow.
 const (
-	loginStepProvider = "provider" // choose: nvidia / opencode / custom
-	loginStepAPIKey   = "apikey"
-	loginStepBaseURL  = "baseurl"
-	loginStepModel    = "model"
+	loginStepProvider  = "provider" // choose: nvidia / opencode / cloudflare / custom
+	loginStepAPIKey    = "apikey"
+	loginStepAccountID = "accountid" // Cloudflare only
+	loginStepBaseURL   = "baseurl"
+	loginStepModel     = "model"
 )
 
 // loginDraft accumulates the values collected during a /login flow.
 type loginDraft struct {
-	provider string // nvidia | opencode | custom
-	apiKey   string
-	baseURL  string
-	model    string
-	choice   int // numeric provider choice (1-3)
+	provider  string // nvidia | opencode | cloudflare | custom
+	apiKey    string
+	baseURL   string
+	model     string
+	choice    int    // numeric provider choice (1-4)
+	accountID string // Cloudflare account ID
 }
 
 // NewModel wires up the TUI with an agent and all enterprise subsystems.
@@ -314,6 +316,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	t := m.theme
 	width := max(m.width, 60)
+
+	// Full-page login form — takes over the entire screen.
+	if m.loginStep != "" {
+		return m.renderLoginForm()
+	}
+
 	header := m.topBar(width)
 	inputBox := t.InputBox.Width(max(width-4, 40)).Render(m.input.View())
 	hints := m.footerHints(width)
@@ -907,7 +915,6 @@ func (m Model) handleSlash(prompt string) (tea.Model, tea.Cmd) {
 		m.input.Reset()
 		m.loginStep = loginStepProvider
 		m.loginDraft = loginDraft{}
-		m.appendLine(m.renderLoginPrompt())
 		return m, nil
 
 	case "/auth":
@@ -1081,7 +1088,7 @@ func (m Model) handleSlash(prompt string) (tea.Model, tea.Cmd) {
 			"  /normal-mode     deactivate cybersecurity mode\n" +
 			"  /model <name>    switch model\n" +
 			"  /models          list available models\n" +
-			"  /login           set API key / provider interactively (nvidia · opencode · custom)\n" +
+			"  /login           set API key / provider interactively (nvidia · opencode · cloudflare · custom)\n" +
 			"  /undo /redo      revert or reapply file changes\n" +
 			"  /history         list file changes\n" +
 			"  /save            save this session\n" +
