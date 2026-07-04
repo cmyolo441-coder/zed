@@ -1,5 +1,37 @@
 # ZED — Real Enterprise Autonomous Software Engineering Agent
 
+## Install
+
+**Option A — `go install` (Go users ke liye sabse easy):**
+
+```bash
+go install github.com/gjkjk/zed/cmd/zed@latest
+```
+
+Iske baad `zed` command kahin se bhi chalega (agar `$GOPATH/bin` ya `$HOME/go/bin` PATH me hai).
+
+**Option B — Ready binary download karo (Go install ki zaroorat nahi):**
+
+1. [Releases page](https://github.com/gjkjk/zed/releases) par jao.
+2. Apne OS ka binary download karo:
+   - Windows: `zed-windows-amd64.exe`
+   - Linux: `zed-linux-amd64` (ya `zed-linux-arm64`)
+   - macOS Intel: `zed-macos-amd64` — Apple Silicon: `zed-macos-arm64`
+3. Linux/macOS par executable banao aur chalao:
+   ```bash
+   chmod +x zed-linux-amd64
+   ./zed-linux-amd64
+   ```
+
+**Setup (pehli baar):** ek API key chahiye. Set karo:
+
+```bash
+export ZED_API_KEY="your-key"   # Windows PowerShell: $env:ZED_API_KEY="your-key"
+zed
+```
+
+---
+
 This repository was upgraded from the supplied ZIP source into a real, local-evidence enterprise agent. Fake/skipped test scaffolds and pretend controls were removed or replaced with deterministic Go implementations that inspect actual project files.
 
 ## What is real now
