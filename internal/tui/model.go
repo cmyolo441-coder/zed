@@ -105,6 +105,7 @@ type loginDraft struct {
 	apiKey   string
 	baseURL  string
 	model    string
+	choice   int // numeric provider choice (1-3)
 }
 
 // NewModel wires up the TUI with an agent and all enterprise subsystems.

@@ -18,6 +18,7 @@ import (
 	"github.com/cmyolo441-coder/zed/internal/agentos"
 	"github.com/cmyolo441-coder/zed/internal/config"
 	"github.com/cmyolo441-coder/zed/internal/llm"
+	"github.com/cmyolo441-coder/zed/internal/login"
 	"github.com/cmyolo441-coder/zed/internal/mission"
 	"github.com/cmyolo441-coder/zed/internal/promax"
 )
@@ -174,7 +175,7 @@ func (m *Model) renderAuthUI() string {
 	b.WriteString("\n")
 	b.WriteString(m.theme.Glow.Render("        ◢◤\n     ◢██◤   ◢◤\n   ◢████◤ ◢██\n     ◥██◣◢██◤\n        ◥◤") + "\n\n")
 	b.WriteString(m.theme.Title.Render("BITTU CHAUHAN AUTH") + "\n\n")
-	b.WriteString(m.theme.Dim.Render("Run /login to set your API key interactively (NVIDIA, opencode, or custom OpenAI-compatible).") + "\n\n")
+	b.WriteString(m.theme.Dim.Render("Run /login to set your API key interactively.") + "\n\n")
 	b.WriteString(m.theme.Dim.Render("Or set environment variables:") + "\n")
 	b.WriteString("  export ZED_API_KEY=...\n  export OPENAI_API_KEY=...\n  export ANTHROPIC_API_KEY=...\n\n")
 	b.WriteString(m.theme.Hint.Render("/login — interactive login · /setup — provider/model config · ctrl+c quit") + "\n")
@@ -184,14 +185,18 @@ func (m *Model) renderAuthUI() string {
 // renderLoginPrompt shows the prompt for the current /login step.
 func (m *Model) renderLoginPrompt() string {
 	var b strings.Builder
-	b.WriteString(m.theme.Title.Render("🔐 /login — Authenticate") + "\n\n")
+	b.WriteString(m.theme.Title.Render("🔐  LOGIN") + "\n\n")
 	switch m.loginStep {
 	case loginStepProvider:
-		b.WriteString(m.theme.Prompt.Render("Choose a provider:") + "\n")
-		b.WriteString("  1. nvidia    — NVIDIA API (integrate.api.nvidia.com)\n")
-		b.WriteString("  2. opencode  — opencode.ai zen endpoint (free models)\n")
-		b.WriteString("  3. custom    — any OpenAI-compatible endpoint (your own key + base URL + model)\n\n")
-		b.WriteString(m.theme.Dim.Render("Type 1, 2, or 3 (or the name) and press Enter.") + "\n")
+		b.WriteString(m.theme.Prompt.Render("Choose a provider:") + "\n\n")
+		for i, p := range login.Providers {
+			marker := "  "
+			if i+1 == m.loginDraft.choice {
+				marker = m.theme.Tool.Render("→ ")
+			}
+			b.WriteString(fmt.Sprintf("%s%s. %s\n     %s\n", marker, m.theme.Tool.Render(fmt.Sprintf("%d", i+1)), p.Name, m.theme.Dim.Render(p.Description)))
+		}
+		b.WriteString("\n" + m.theme.Dim.Render("Type 1, 2, or 3 and press Enter.") + "\n")
 	case loginStepAPIKey:
 		prov := m.loginDraft.provider
 		hint := "Paste your API key"
@@ -204,13 +209,23 @@ func (m *Model) renderLoginPrompt() string {
 			hint = "Paste your API key for this endpoint"
 		}
 		b.WriteString(m.theme.Prompt.Render(hint) + "\n")
-		b.WriteString(m.theme.Dim.Render("(input is not echoed in the transcript; press Enter to submit, Esc to cancel)") + "\n")
+		b.WriteString(m.theme.Dim.Render("Press Enter to submit · Esc to cancel") + "\n")
 	case loginStepBaseURL:
-		b.WriteString(m.theme.Prompt.Render("Enter the base URL (OpenAI-compatible /chat/completions endpoint):") + "\n")
+		b.WriteString(m.theme.Prompt.Render("Enter base URL (OpenAI-compatible /chat/completions):") + "\n")
 		b.WriteString(m.theme.Dim.Render("e.g. https://api.openai.com/v1/chat/completions") + "\n")
 	case loginStepModel:
-		b.WriteString(m.theme.Prompt.Render("Enter the model name to use:") + "\n")
-		b.WriteString(m.theme.Dim.Render("e.g. gpt-4o, z-ai/glm-5.2, mimo-v2.5-pro") + "\n")
+		prov, _ := login.ProviderByName(m.loginDraft.provider)
+		if prov != nil && len(prov.Models) > 0 {
+			b.WriteString(m.theme.Prompt.Render("Choose a model:") + "\n\n")
+			for i, name := range prov.Models {
+				marker := "  "
+				b.WriteString(fmt.Sprintf("%s%s. %s\n", marker, m.theme.Tool.Render(fmt.Sprintf("%d", i+1)), name))
+			}
+			b.WriteString("\n" + m.theme.Dim.Render("Type a number or a custom model name and press Enter.") + "\n")
+		} else {
+			b.WriteString(m.theme.Prompt.Render("Enter the model name:") + "\n")
+			b.WriteString(m.theme.Dim.Render("e.g. gpt-4o, mimo-v2.5-pro") + "\n")
+		}
 	}
 	return m.theme.Panel.Width(max(m.width-4, 60)).Render(b.String())
 }
@@ -221,33 +236,40 @@ func (m Model) captureLoginStep(value string) (tea.Model, tea.Cmd) {
 	m.input.Reset()
 	switch m.loginStep {
 	case loginStepProvider:
-		v := strings.ToLower(strings.TrimSpace(value))
+		v := strings.TrimSpace(value)
+		var prov *login.ProviderInfo
 		switch v {
 		case "1", "nvidia":
-			m.loginDraft.provider = "nvidia"
+			prov, _ = login.ProviderByName("nvidia")
 		case "2", "opencode":
-			m.loginDraft.provider = "opencode"
+			prov, _ = login.ProviderByName("opencode")
 		case "3", "custom":
-			m.loginDraft.provider = "custom"
+			prov, _ = login.ProviderByName("custom")
 		default:
-			m.appendLine(m.theme.ToolErr.Render("Unknown choice. Login cancelled.") + "\n")
+			m.appendLine(m.theme.ToolErr.Render("Invalid choice. Type 1, 2, or 3.") + "\n")
+			m.appendLine(m.renderLoginPrompt())
+			return m, nil
+		}
+		if prov == nil {
+			m.appendLine(m.theme.ToolErr.Render("Unknown provider. Login cancelled.") + "\n")
 			m.loginStep = ""
 			return m, nil
 		}
-		m.appendLine(m.theme.Tool.Render("Provider: "+m.loginDraft.provider) + "\n")
+		m.loginDraft.provider = prov.Name
+		m.loginDraft.baseURL = prov.BaseURL
+		m.appendLine(m.theme.Tool.Render("→ Provider: "+prov.Name) + "\n")
 		m.loginStep = loginStepAPIKey
 		m.appendLine(m.renderLoginPrompt())
 		return m, nil
 
 	case loginStepAPIKey:
-		if value == "" {
+		if strings.TrimSpace(value) == "" {
 			m.appendLine(m.theme.ToolErr.Render("API key cannot be empty. Login cancelled.") + "\n")
 			m.loginStep = ""
 			return m, nil
 		}
-		m.loginDraft.apiKey = value
-		m.appendLine(m.theme.Tool.Render("✓ API key captured.") + "\n")
-		// opencode and nvidia have fixed endpoints; only custom asks for base URL.
+		m.loginDraft.apiKey = strings.TrimSpace(value)
+		m.appendLine(m.theme.Tool.Render("✓ API key saved.") + "\n")
 		if m.loginDraft.provider == "custom" {
 			m.loginStep = loginStepBaseURL
 		} else {
@@ -257,24 +279,34 @@ func (m Model) captureLoginStep(value string) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case loginStepBaseURL:
-		if value == "" {
+		if strings.TrimSpace(value) == "" {
 			m.appendLine(m.theme.ToolErr.Render("Base URL cannot be empty. Login cancelled.") + "\n")
 			m.loginStep = ""
 			return m, nil
 		}
-		m.loginDraft.baseURL = value
+		m.loginDraft.baseURL = strings.TrimSpace(value)
 		m.appendLine(m.theme.Tool.Render("✓ Base URL set.") + "\n")
 		m.loginStep = loginStepModel
 		m.appendLine(m.renderLoginPrompt())
 		return m, nil
 
 	case loginStepModel:
-		if value == "" {
+		v := strings.TrimSpace(value)
+		if v == "" {
 			m.appendLine(m.theme.ToolErr.Render("Model name cannot be empty. Login cancelled.") + "\n")
 			m.loginStep = ""
 			return m, nil
 		}
-		m.loginDraft.model = value
+		// If user typed a number, resolve it from the provider's model list.
+		prov, _ := login.ProviderByName(m.loginDraft.provider)
+		if prov != nil {
+			idx := 0
+			fmt.Sscanf(v, "%d", &idx)
+			if idx >= 1 && idx <= len(prov.Models) {
+				v = prov.Models[idx-1]
+			}
+		}
+		m.loginDraft.model = v
 		m.finaliseLogin()
 		return m, nil
 	}
@@ -294,13 +326,13 @@ func (m *Model) finaliseLogin() {
 	case "nvidia":
 		m.cfg.Provider = "openai"
 		m.cfg.APIKey = d.apiKey
-		m.cfg.BaseURL = "https://integrate.api.nvidia.com/v1/chat/completions"
+		m.cfg.BaseURL = d.baseURL
 		m.cfg.AuthHeader = ""
 		m.cfg.Model = d.model
 	case "opencode":
 		m.cfg.Provider = "openai"
 		m.cfg.APIKey = d.apiKey
-		m.cfg.BaseURL = config.DefaultBaseURL
+		m.cfg.BaseURL = d.baseURL
 		m.cfg.AuthHeader = ""
 		m.cfg.Model = d.model
 	case "custom":
@@ -308,10 +340,18 @@ func (m *Model) finaliseLogin() {
 	}
 	_ = m.cfg.Save()
 
+	// Also persist via login.Save for extra safety.
+	_ = login.Save(&login.Config{
+		Provider: d.provider,
+		APIKey:   d.apiKey,
+		BaseURL:  d.baseURL,
+		Model:    d.model,
+	})
+
 	// Rebuild the LLM client + agent so the new key/endpoint/model are live.
 	newClient, err := llm.New(m.cfg)
 	if err != nil {
-		m.appendLine(m.theme.ToolErr.Render("Login saved, but failed to rebuild client: "+err.Error()) + "\n")
+		m.appendLine(m.theme.ToolErr.Render("⚠ Saved, but client rebuild failed: "+err.Error()) + "\n")
 		return
 	}
 	if m.cch != nil {
@@ -320,11 +360,13 @@ func (m *Model) finaliseLogin() {
 	m.agent.SetClient(newClient)
 
 	var b strings.Builder
-	b.WriteString(m.theme.Tool.Render("✓ Logged in.") + "\n")
-	fmt.Fprintf(&b, "   provider: %s\n", d.provider)
-	fmt.Fprintf(&b, "   model:    %s\n", m.cfg.Model)
-	fmt.Fprintf(&b, "   endpoint: %s\n", m.cfg.BaseURL)
-	b.WriteString(m.theme.Dim.Render("   (saved to ~/.config/zed/config.json — ready to chat)") + "\n")
+	b.WriteString("\n")
+	b.WriteString(m.theme.Tool.Render("✓ Login successful!") + "\n")
+	fmt.Fprintf(&b, "  provider : %s\n", d.provider)
+	fmt.Fprintf(&b, "  model    : %s\n", m.cfg.Model)
+	fmt.Fprintf(&b, "  endpoint : %s\n", m.cfg.BaseURL)
+	b.WriteString(m.theme.Dim.Render("  saved to ~/.config/zed/config.json") + "\n")
+	b.WriteString(m.theme.Dim.Render("  ready to chat — type your message below") + "\n")
 	m.appendLine(b.String())
 }
 
