@@ -1,0 +1,309 @@
+id,crate,path,purpose,est_loc,phase
+1,cli,crates/cli/src/main.rs,"Process entry: panic hook, tokio runtime, arg0 dispatch, exit codes",70,P0
+2,cli,crates/cli/src/lib.rs,Public wiring of subcommands + re-exports for integration tests,60,P0
+3,cli,crates/cli/src/cli.rs,"clap root command, global flags, config overrides, help text",260,P0
+4,cli,crates/cli/src/commands/mod.rs,Subcommand registry + shared command context struct,80,P0
+5,cli,crates/cli/src/commands/interactive.rs,Launches TUI or falls back to dumb REPL on non-TTY,150,P0
+6,cli,crates/cli/src/commands/exec.rs,Headless one-shot / JSONL streaming / CI exit-code contract,220,P1
+7,cli,crates/cli/src/commands/review.rs,Non-interactive diff review mode for PR gates,180,P2
+8,cli,crates/cli/src/commands/mcp_serve.rs,Runs the binary as an MCP stdio server (agent-as-tool),160,P2
+9,cli,crates/cli/src/commands/auth.rs,login / logout / status; delegates OAuth to auth crate,200,P1
+10,cli,crates/cli/src/commands/doctor.rs,"Env probe: term caps, sandbox availability, proxy, keyring, disk",240,P1
+11,cli,crates/cli/src/commands/config_cmd.rs,"get/set/list/edit layered config, validation errors",190,P1
+12,cli,crates/cli/src/commands/update.rs,Self-update with signature verification + rollback slot,200,P2
+13,cli,crates/cli/src/commands/completions.rs,Shell completions + man page generation,90,P3
+14,cli,crates/cli/src/signals.rs,"SIGINT/SIGTERM/SIGHUP handling, graceful cancel, terminal restore",130,P0
+15,protocol,crates/protocol/src/lib.rs,Module exports + protocol version constant,50,P0
+16,protocol,crates/protocol/src/op.rs,"Client-to-agent operations: submit, interrupt, steer, approve, compact",260,P0
+17,protocol,crates/protocol/src/event.rs,"Agent-to-client event enum (turn started, delta, tool call, usage, error)",380,P0
+18,protocol,crates/protocol/src/message.rs,"Provider-neutral message IR: role, content parts, tool calls, thinking",300,P0
+19,protocol,crates/protocol/src/content.rs,"Content block types: text, image, resource link, diff, terminal output",240,P1
+20,protocol,crates/protocol/src/tool.rs,"Tool call/result envelopes, structured error taxonomy",280,P0
+21,protocol,crates/protocol/src/permission.rs,Permission request/decision types + rule scope identifiers,200,P0
+22,protocol,crates/protocol/src/model.rs,"Model descriptor, capability flags, pricing, context window metadata",220,P1
+23,protocol,crates/protocol/src/usage.rs,"Token usage, cache hit/miss accounting, cost breakdown",140,P1
+24,protocol,crates/protocol/src/ids.rs,"Typed newtype IDs: ThreadId, TurnId, CallId, SessionId",90,P0
+25,protocol,crates/protocol/src/config_types.rs,Serialisable config schema (serde) shared by file/env/CLI layers,260,P0
+26,protocol,crates/protocol/src/schema_export.rs,JSON-Schema generation for TypeScript/Python SDK consumers,150,P2
+27,protocol,crates/protocol/src/acp_types.rs,"Agent Client Protocol mapping types (sessions, updates, diffs)",260,P2
+28,protocol,crates/protocol/src/version_neg.rs,Protocol/version negotiation + backwards-compat shims,120,P2
+29,core,crates/core/src/lib.rs,"Re-exports of ThreadManager, Session, Agent, Config as embeddable API",90,P0
+30,core,crates/core/src/agent/mod.rs,"Agent facade: owns loop, registries, policy handle, event sink",180,P0
+31,core,crates/core/src/agent/loop.rs,Turn loop: assemble -> stream -> route tools -> observe -> decide,620,P0
+32,core,crates/core/src/agent/state.rs,Explicit turn state machine (Idle/Streaming/ToolWait/Compacting/Done),340,P0
+33,core,crates/core/src/agent/turn.rs,"Single turn context: attempt counter, retries, partial output buffers",260,P0
+34,core,crates/core/src/agent/cancel.rs,Cancellation tree (CancellationToken per turn/subagent/tool),150,P0
+35,core,crates/core/src/agent/steering.rs,"Mid-turn user steering queue, priority interrupts",220,P1
+36,core,crates/core/src/agent/budget.rs,Token/tool/time/cost budget ledger with hard stops,280,P0
+37,core,crates/core/src/agent/limits.rs,"Loop detection, repeated-call detector, max-turn guard",240,P1
+38,core,crates/core/src/session/mod.rs,"Session struct: history, config, cwd, permissions snapshot",260,P0
+39,core,crates/core/src/session/manager.rs,"ThreadManager: create/fork/resume/list, lifecycle + GC",380,P0
+40,core,crates/core/src/session/fork.rs,Conversation forking for side-quests and subagents,200,P2
+41,core,crates/core/src/session/history.rs,Append-only history with normalization and dedup,300,P0
+42,core,crates/core/src/context_mgr/mod.rs,Decides what enters the window; coordinates compaction ladder,340,P0
+43,core,crates/core/src/context_mgr/budget_split.rs,Allocates window across system/memory/history/tools/output,220,P0
+44,core,crates/core/src/prompt/mod.rs,Prompt assembler + section ordering for cache stability,240,P0
+45,core,crates/core/src/prompt/system.rs,"System prompt composition from mode, env, policy, capabilities",320,P0
+46,core,crates/core/src/prompt/templates.rs,Compile-time embedded prompt fragments (include_str!),160,P0
+47,core,crates/core/src/prompt/env_context.rs,"OS, shell, git branch, date, cwd tree, sandbox warnings",220,P1
+48,core,crates/core/src/tools/mod.rs,"ToolRegistry: registration, schema filtering, deferred loading",300,P0
+49,core,crates/core/src/tools/router.rs,"Name resolution, alias handling, parallel vs serial dispatch rules",260,P0
+50,core,crates/core/src/tools/executor.rs,"Executes calls with timeouts, cancellation, output truncation",340,P0
+51,core,crates/core/src/tools/result_policy.rs,"Per-tool result shaping: truncate, summarise, elide, re-read hints",260,P1
+52,core,crates/core/src/approval/mod.rs,Approval pipeline: policy -> auto-classifier -> prompt user,300,P0
+53,core,crates/core/src/approval/modes.rs,Five approval modes and their decision tables,200,P0
+54,core,crates/core/src/approval/remember.rs,Session-scoped 'always allow' memory with expiry,160,P1
+55,core,crates/core/src/retry.rs,"Retry policy: transient vs fatal, jittered backoff, provider hints",220,P0
+56,core,crates/core/src/error.rs,Error taxonomy + user-facing remediation strings,240,P0
+57,core,crates/core/src/config/mod.rs,Layered config resolution and typed access,260,P0
+58,core,crates/core/src/config/layers.rs,Precedence: defaults < global < project < env < CLI < managed,220,P0
+59,core,crates/core/src/config/validate.rs,Schema + semantic validation with actionable messages,240,P1
+60,core,crates/core/src/config/managed.rs,"Enterprise managed policy file (admin-locked, signature optional)",200,P2
+61,core,crates/core/src/features.rs,Feature flags / staged rollout gates,120,P2
+62,core,crates/core/src/events.rs,Internal event bus bridging loop -> UI/server/telemetry,220,P0
+63,core,crates/core/src/tasks.rs,Todo/plan state machine exposed to the model as a tool,220,P1
+64,core,crates/core/src/subagent/mod.rs,Spawn isolated child sessions with summary-only return,320,P1
+65,core,crates/core/src/subagent/types.rs,"Built-in agent profiles (explore, plan, review, test)",200,P2
+66,core,crates/core/src/verify.rs,Post-edit self-check: compile/test hook invocation + verdict parsing,240,P2
+67,core,crates/core/src/util/mod.rs,Small shared helpers (no I/O policy here),60,P0
+68,core,crates/core/src/util/paths.rs,"Workspace root detection, path confinement helper (single source)",220,P0
+69,core,crates/core/src/util/truncate.rs,"UTF-8 safe, grapheme aware head/tail truncation",140,P0
+70,core,crates/core/src/util/dedup.rs,Near-duplicate output detection for repeated file reads,160,P1
+71,core,crates/core/src/clock.rs,Injectable clock for deterministic tests,80,P1
+72,model,crates/model/src/lib.rs,"Public API: Gateway, ModelClient, ModelId, usage types",60,P0
+73,model,crates/model/src/message_convert.rs,Bidirectional conversion between IR and provider payloads,340,P0
+74,model,crates/model/src/gateway.rs,"Model selection, fallback chains, per-role routing (main/summarizer/classifier)",300,P0
+75,model,crates/model/src/client.rs,"HTTP client: pooling, proxy, TLS, timeouts, idempotent retries",320,P0
+76,model,crates/model/src/stream.rs,"SSE framing, event decode, keepalive, graceful abort",400,P0
+77,model,crates/model/src/stream_assembly.rs,Incremental tool-call JSON accumulation + repair of partial args,320,P0
+78,model,crates/model/src/providers/mod.rs,Provider trait + registry + shared helpers,160,P0
+79,model,crates/model/src/providers/anthropic.rs,"Messages API: cache_control breakpoints, thinking blocks",520,P0
+80,model,crates/model/src/providers/openai_responses.rs,"Responses API: item stream, tool outputs, reasoning effort",540,P0
+81,model,crates/model/src/providers/openai_chat.rs,Chat Completions fallback for OpenAI-compatible hosts,380,P1
+82,model,crates/model/src/providers/gemini.rs,generateContent + function calling + 1M context handling,440,P1
+83,model,crates/model/src/providers/bedrock.rs,AWS Bedrock Converse + SigV4 credential chain,300,P2
+84,model,crates/model/src/providers/vertex.rs,Vertex AI endpoint + ADC auth,280,P2
+85,model,crates/model/src/providers/azure.rs,Azure OpenAI deployment routing and api-version pinning,240,P2
+86,model,crates/model/src/providers/ollama.rs,"Local models: capability probing, no-stream fallback",240,P1
+87,model,crates/model/src/providers/openrouter.rs,"Aggregator routing headers, provider preference",200,P3
+88,model,crates/model/src/providers/custom.rs,Generic OpenAI-compatible BYO endpoint with schema probing,220,P2
+89,model,crates/model/src/auth_headers.rs,"Auth strategies: API key, bearer, signed, OAuth token refresh",220,P0
+90,model,crates/model/src/capabilities.rs,"Feature matrix per model: tools, images, cache, reasoning, limits",260,P1
+91,model,crates/model/src/token_count.rs,Fast tokenizer + provider-authoritative usage reconciliation,280,P0
+92,model,crates/model/src/pricing.rs,"Price table, cache-aware cost math, per-session spend",220,P1
+93,model,crates/model/src/cache.rs,Prompt-cache breakpoint placement and invalidation guard,260,P1
+94,model,crates/model/src/reasoning.rs,Reasoning/thinking budget control and redaction from history,220,P2
+95,model,crates/model/src/ratelimit.rs,"429/overloaded handling, retry-after parsing, queueing",220,P0
+96,model,crates/model/src/failover.rs,Cross-provider failover with conversation replay safety,260,P2
+97,model,crates/model/src/mock.rs,Scriptable mock model used by every integration test,300,P0
+98,context,crates/context/src/lib.rs,ContextEngine facade used by the turn loop,70,P0
+99,context,crates/context/src/assembler.rs,"Builds the final request: sections, order, cache boundaries",360,P0
+100,context,crates/context/src/sections.rs,Section model (stable/volatile) with token accounting,240,P0
+101,context,crates/context/src/system_sections.rs,"Ordered system fragments: identity, rules, tools, env, policy",300,P0
+102,context,crates/context/src/memory/mod.rs,Layered memory loader and merge policy,220,P1
+103,context,crates/context/src/memory/hierarchy.rs,"AGENTS.md/CLAUDE.md upward discovery, scoped rules, size caps",280,P0
+104,context,crates/context/src/memory/auto.rs,Agent-written notes with provenance and TTL,240,P2
+105,context,crates/context/src/memory/conflicts.rs,Deterministic precedence when user/project/managed rules collide,200,P2
+106,context,crates/context/src/attachments.rs,"Explicit @file/@dir/@url references, images, pasted blobs",240,P1
+107,context,crates/context/src/imports.rs,Inline file imports with depth/size guards,180,P2
+108,context,crates/context/src/compaction/mod.rs,Compaction driver + trigger thresholds + hooks,300,P0
+109,context,crates/context/src/compaction/ladder.rs,Escalating strategy chain; stop as soon as budget is met,260,P0
+110,context,crates/context/src/compaction/snip.rs,Stage 1: clip oversized tool outputs and old images,240,P0
+111,context,crates/context/src/compaction/dedupe.rs,Stage 2: remove duplicated reads and repeated outputs,220,P1
+112,context,crates/context/src/compaction/collapse.rs,Stage 3: reversible folding of inactive segments,300,P2
+113,context,crates/context/src/compaction/summarize.rs,Stage 4: model-assisted summary with pinned facts,400,P0
+114,context,crates/context/src/compaction/restore.rs,Re-inject recently edited files and active plan after compaction,240,P1
+115,context,crates/context/src/compaction/prompt.rs,Summariser prompt + structured output contract,200,P0
+116,context,crates/context/src/ledger.rs,Token ledger: per-section estimate vs provider truth,280,P0
+117,context,crates/context/src/pressure.rs,Watermarks (soft/hard) and pre-flight overflow prediction,200,P0
+118,context,crates/context/src/tool_budget.rs,"Tool schema budget, deferred/lazy schema disclosure",260,P2
+119,context,crates/context/src/scratchpad.rs,Agent-maintained plan/scratch state that survives compaction,220,P1
+120,index,crates/index/src/lib.rs,Index facade + configuration,70,P1
+121,index,crates/index/src/repo_map/mod.rs,Builds a token-budgeted map of the repository,300,P1
+122,index,crates/index/src/repo_map/tags.rs,tree-sitter queries for definitions/references across languages,420,P1
+123,index,crates/index/src/repo_map/graph.rs,Symbol/file graph construction with weighted edges,320,P1
+124,index,crates/index/src/repo_map/pagerank.rs,Personalised PageRank with chat-seeded restart vector,260,P1
+125,index,crates/index/src/repo_map/cache.rs,SQLite tag cache keyed by mtime + grammar version,240,P2
+126,index,crates/index/src/search.rs,"ripgrep/grep integration, glob filters, result ranking",320,P0
+127,index,crates/index/src/file_tree.rs,gitignore-aware traversal with depth/size limits,220,P0
+128,tools,crates/tools/src/lib.rs,"Tool trait, registry re-exports, feature gating",120,P0
+129,tools,crates/tools/src/tool.rs,"Tool trait: schema, validation, execute, preview, risk class, UI hints",300,P0
+130,tools,crates/tools/src/schema.rs,JSON-Schema builder + token-cost estimator per tool,240,P0
+131,tools,crates/tools/src/registry.rs,"Static + dynamic tool pool, name collision resolution, enable/disable",280,P0
+132,tools,crates/tools/src/fs/read.rs,"Paged file read with line ranges, binary detection, image routing",340,P0
+133,tools,crates/tools/src/fs/write.rs,Atomic create/overwrite with backup and encoding preservation,260,P0
+134,tools,crates/tools/src/fs/edit.rs,Exact string replacement with occurrence disambiguation,320,P0
+135,tools,crates/tools/src/fs/multi_edit.rs,Batch edits with all-or-nothing semantics,240,P1
+136,tools,crates/tools/src/fs/glob.rs,"Glob/gitignore-aware file discovery, sorted, capped",200,P0
+137,tools,crates/tools/src/fs/ls.rs,Directory tree listing with sizes and ignore rules,180,P0
+138,tools,crates/tools/src/fs/move_copy.rs,Rename/copy/delete with trash-by-default safety,200,P2
+139,tools,crates/tools/src/fs/notebook.rs,Jupyter cell editing as a first-class tool,260,P3
+140,tools,crates/tools/src/patch/mod.rs,Patch subsystem facade,80,P0
+141,tools,crates/tools/src/patch/parser.rs,Unified diff + V4A + search/replace block parser,480,P0
+142,tools,crates/tools/src/patch/apply.rs,Context-tolerant application with fuzzy anchors,420,P0
+143,tools,crates/tools/src/patch/validate.rs,Pre-flight validation against current file bytes,300,P0
+144,tools,crates/tools/src/patch/rollback.rs,"Transactional apply: journal, partial failure rollback",260,P1
+145,tools,crates/tools/src/search/grep.rs,"Regex search with context lines, type filters, result caps",380,P0
+146,tools,crates/tools/src/search/engine.rs,ripgrep binary vs in-process fallback selection,240,P1
+147,tools,crates/tools/src/shell/mod.rs,"Shell tool: command spec, risk scan, approval binding",320,P0
+148,tools,crates/tools/src/shell/session.rs,Persistent shell session with cwd/env persistence,380,P1
+149,tools,crates/tools/src/shell/background.rs,"Background jobs, log tailing, lifecycle ownership",300,P2
+150,tools,crates/tools/src/shell/risk.rs,Command classification: read-only / mutating / destructive / network,340,P0
+151,tools,crates/tools/src/shell/format.rs,"Output post-processing: ANSI strip, exit code, truncation",200,P0
+152,tools,crates/tools/src/net/fetch.rs,"URL fetch with SSRF guard, size cap, HTML->text extraction",340,P1
+153,tools,crates/tools/src/net/search.rs,Pluggable web search provider + citation formatting,280,P2
+154,tools,crates/tools/src/lsp/client.rs,"LSP client lifecycle over stdio (rust-analyzer, tsserver, gopls)",420,P2
+155,tools,crates/tools/src/lsp/diagnostics.rs,Post-edit diagnostics as structured tool output,300,P2
+156,tools,crates/tools/src/lsp/symbols.rs,Definition/reference/hover queries for precise navigation,260,P3
+157,tools,crates/tools/src/git/status.rs,Status/diff/log summaries optimised for model consumption,240,P1
+158,tools,crates/tools/src/git/commit.rs,Commit with generated message + attribution trailer,200,P1
+159,tools,crates/tools/src/git/worktree.rs,Ephemeral worktrees for isolated parallel tasks,260,P2
+160,tools,crates/tools/src/plan.rs,todo_write / plan tool with stable IDs and status transitions,260,P1
+161,tools,crates/tools/src/ask_user.rs,Elicitation tool: structured questions with choices,220,P1
+162,tools,crates/tools/src/task.rs,"Subagent spawn tool: prompt, profile, budget, summary return",300,P1
+163,tools,crates/tools/src/memory_tool.rs,Explicit memory read/write tool with review gate,200,P2
+164,tools,crates/tools/src/render.rs,"Per-tool UI render hints (diff view, terminal, table, image)",220,P1
+165,tools,crates/tools/src/errors.rs,Tool error mapping to model-actionable messages,200,P0
+166,tools,crates/tools/src/path_guard.rs,Single choke-point for every model-supplied path,180,P0
+167,exec,crates/exec/src/lib.rs,Executor facade + public result types,100,P0
+168,exec,crates/exec/src/spec.rs,"CommandSpec: argv, cwd, env, stdin, timeout, shell mode",220,P0
+169,exec,crates/exec/src/spawn.rs,tokio::process spawn with process-group ownership,300,P0
+170,exec,crates/exec/src/pty.rs,PTY allocation via portable-pty for interactive programs,340,P1
+171,exec,crates/exec/src/pty_session.rs,"Long-lived PTY session: writes, reads, resize, expect-style waits",360,P2
+172,exec,crates/exec/src/env.rs,"Env scrubbing: strip secrets, set deterministic vars, PATH policy",220,P0
+173,exec,crates/exec/src/timeout.rs,Deadline enforcement + SIGTERM->SIGKILL escalation,180,P0
+174,exec,crates/exec/src/output.rs,Ring-buffered stdout/stderr capture with size caps,260,P0
+175,exec,crates/exec/src/stream.rs,Live output streaming into events for the TUI,240,P1
+176,exec,crates/exec/src/reaper.rs,Zombie/orphan cleanup on cancel and on process exit,200,P1
+177,sandbox,crates/sandbox/src/lib.rs,"Backend selection, capability probe, graceful degradation",200,P0
+178,sandbox,crates/sandbox/src/policy.rs,"SandboxPolicy: readable/writable roots, network, spawn, env",260,P0
+179,sandbox,crates/sandbox/src/backend.rs,Backend trait + apply-to-child contract,180,P0
+180,sandbox,crates/sandbox/src/linux_bwrap.rs,bubblewrap argv construction with read-only binds,340,P1
+181,sandbox,crates/sandbox/src/linux_landlock.rs,Landlock ruleset built pre-exec in a single-threaded worker,360,P1
+182,sandbox,crates/sandbox/src/linux_seccomp.rs,seccomp-BPF filter: block mount/ptrace/raw sockets,320,P2
+183,sandbox,crates/sandbox/src/macos_seatbelt.rs,SBPL profile generation + sandbox-exec wrapper,380,P1
+184,sandbox,crates/sandbox/src/windows_appcontainer.rs,AppContainer + capability SIDs for child processes,360,P2
+185,sandbox,crates/sandbox/src/windows_job.rs,"Job object limits: memory, process count, kill-on-close",240,P2
+186,sandbox,crates/sandbox/src/network.rs,Egress allowlist + loopback proxy wiring for sandboxed net,320,P2
+187,sandbox,crates/sandbox/src/probe.rs,"Runtime detection: kernel version, bwrap present, entitlement checks",220,P0
+188,sandbox,crates/sandbox/src/diagnostics.rs,"Explains WHY a sandboxed command failed (denied path, missing bind)",240,P1
+189,policy,crates/policy/src/lib.rs,"Policy facade used by tools, approvals and server",100,P0
+190,policy,crates/policy/src/rules.rs,"Rule model + glob/specifier matching (path, command, host, tool)",340,P0
+191,policy,crates/policy/src/engine.rs,"Deny-first evaluation order, specificity tie-breaks, explain()",320,P0
+192,policy,crates/policy/src/modes.rs,"Approval modes: read-only, ask, auto-edit, plan, bypass + transitions",240,P0
+193,policy,crates/policy/src/classifier.rs,Heuristic command risk scoring; optional model tie-breaker,300,P2
+194,policy,crates/policy/src/redaction.rs,Secret/PII scrubbing before any bytes leave the machine,300,P0
+195,policy,crates/policy/src/audit.rs,Append-only hash-chained audit log with periodic anchors,320,P1
+196,policy,crates/policy/src/audit_export.rs,"SIEM sinks: syslog, OTLP logs, JSONL file rotation",240,P2
+197,policy,crates/policy/src/managed.rs,Admin-locked managed policy merge + integrity check,260,P2
+198,policy,crates/policy/src/network.rs,Egress allowlist evaluation and proxy decision,220,P2
+199,policy,crates/policy/src/incident.rs,"Kill switch: global stop, per-repo deny, session revocation",200,P2
+200,policy,crates/policy/src/attribution.rs,"Binds every action to identity, session, repo and commit",200,P1
+201,state,crates/state/src/lib.rs,Store facade + connection bootstrap + pragmas,140,P0
+202,state,crates/state/src/db.rs,"sqlx pool, WAL config, busy timeout, transaction helpers",220,P0
+203,state,crates/state/src/migrations/0001_init.sql,"Core tables: threads, turns, messages, tool_calls",180,P0
+204,state,crates/state/src/migrations/0002_usage.sql,Token/cost accounting and model metadata tables,120,P1
+205,state,crates/state/src/migrations/0003_rollout.sql,Rollout file index + compaction boundaries,120,P1
+206,state,crates/state/src/migrations/0004_fts.sql,Full-text search over session content,100,P2
+207,state,crates/state/src/migrations/0005_approvals.sql,"Approval grants, policy snapshots, audit anchors",120,P2
+208,state,crates/state/src/models.rs,Row structs and lossless conversions to protocol types,260,P0
+209,state,crates/state/src/threads_repo.rs,CRUD + fork + list + archive for threads,260,P0
+210,state,crates/state/src/turns_repo.rs,Turn lifecycle persistence and status reconciliation after crash,240,P0
+211,state,crates/state/src/messages_repo.rs,"Ordered message append, pagination for resume",240,P0
+212,state,crates/state/src/rollout.rs,JSONL append-only transcript writer with fsync policy,280,P0
+213,state,crates/state/src/replay.rs,Deterministic replay/export of a session for debugging,260,P2
+214,state,crates/state/src/resume.rs,"Resume semantics: rebuild state, revalidate cwd, warn on drift",260,P1
+215,state,crates/state/src/snapshot.rs,Pre-edit file snapshots + shadow-git checkpoint for /undo,300,P1
+216,state,crates/state/src/history_search.rs,"FTS query, ranking, snippet extraction",200,P3
+217,state,crates/state/src/gc.rs,"Retention, size caps, vacuum, orphan cleanup",220,P2
+218,tui,crates/tui/src/lib.rs,"run_ui entrypoint, terminal lifecycle, panic-safe restore",160,P0
+219,tui,crates/tui/src/app.rs,"App state: threads, transcript cache, focus, overlays",520,P0
+220,tui,crates/tui/src/event.rs,"UI event enum: keys, paste, resize, agent events, ticks",240,P0
+221,tui,crates/tui/src/update.rs,"Event -> state reducer (pure, testable, no rendering)",420,P0
+222,tui,crates/tui/src/submit.rs,"Prompt submit path: build op, optimistic echo, cancel handle",220,P0
+223,tui,crates/tui/src/keymap/mod.rs,Layered keymap resolution + user overrides,240,P1
+224,tui,crates/tui/src/keymap/default.rs,Default emacs-ish bindings and chords,200,P1
+225,tui,crates/tui/src/keymap/vim.rs,Modal editing: normal/insert/visual with operators,460,P3
+226,tui,crates/tui/src/input/editor.rs,"Multi-line editor: grapheme cursor, selection, undo stack",480,P0
+227,tui,crates/tui/src/input/history.rs,Prompt history with persistent store and search,220,P1
+228,tui,crates/tui/src/input/completion.rs,@file and /command completion with fuzzy ranking,320,P1
+229,tui,crates/tui/src/input/paste.rs,"Bracketed paste, large-paste refs, image drag-drop",220,P1
+230,tui,crates/tui/src/input/mouse.rs,Scroll/click mapping onto transcript regions,180,P3
+231,tui,crates/tui/src/render/mod.rs,Draw orchestration: layout -> widgets -> diff flush,240,P0
+232,tui,crates/tui/src/render/layout.rs,"Responsive layout: header, transcript, composer, status, overlays",260,P0
+233,tui,crates/tui/src/render/transcript.rs,Virtualised message list with wrap cache and anchor stability,420,P0
+234,tui,crates/tui/src/render/markdown.rs,Streaming markdown -> styled lines (incremental block parse),460,P0
+235,tui,crates/tui/src/render/syntax.rs,"Syntax highlighting with tree-sitter, bounded cache",320,P1
+236,tui,crates/tui/src/render/diff.rs,Side-by-side/unified diff view with word-level emphasis,380,P1
+237,tui,crates/tui/src/render/approval.rs,"Permission prompt: command preview, scope, keyboard-first choices",320,P0
+238,tui,crates/tui/src/render/tool_card.rs,Collapsible tool result cards with per-tool renderers,300,P0
+239,tui,crates/tui/src/render/table.rs,"Aligned tables from model output, width-aware",200,P2
+240,tui,crates/tui/src/render/status.rs,"Status bar: model, tokens, cost, branch, sandbox, latency",220,P1
+241,tui,crates/tui/src/render/spinner.rs,Animated activity with phase labels and elapsed time,160,P0
+242,tui,crates/tui/src/render/overlay.rs,"Modal overlays: help, model picker, session list, diff review",320,P1
+243,tui,crates/tui/src/render/toast.rs,Transient notices + error banner with remediation hints,160,P2
+244,tui,crates/tui/src/render/theme.rs,"Semantic colour tokens, 16/256/truecolor selection",240,P0
+245,tui,crates/tui/src/render/image.rs,Optional kitty/sixel image rendering with capability gate,240,P3
+246,tui,crates/tui/src/term/caps.rs,"DA1/DA2 + TERM probe: colour, kitty keyboard, sync output, hyperlinks",300,P1
+247,tui,crates/tui/src/term/raw.rs,"Raw mode, alternate screen, panic hook, suspend/resume",220,P0
+248,tui,crates/tui/src/term/clipboard.rs,OSC 52 copy with fallback to native tools,140,P2
+249,tui,crates/tui/src/render/board.rs,"Live multi-agent board: worker cards, DAG progress, Gantt, cost",320,P2
+250,tui,crates/tui/src/slash/mod.rs,Slash command registry and parsing,200,P1
+251,tui,crates/tui/src/slash/builtin.rs,Built-ins: /help /model /compact /context /cost /permissions /undo,380,P1
+252,tui,crates/tui/src/a11y.rs,"Screen-reader mode: linear transcript, no animation, verbatim output",200,P2
+253,tui,crates/tui/src/debug_overlay.rs,"Ctrl-D diagnostics: last request, token ledger, timings",220,P2
+254,server,crates/server/src/lib.rs,Server facade + router construction,120,P1
+255,server,crates/server/src/jsonrpc.rs,"JSON-RPC 2.0 framing, id correlation, error mapping",300,P1
+256,server,crates/server/src/app_server.rs,"Session registry, backpressure, client capability negotiation",340,P1
+257,server,crates/server/src/methods/session.rs,"session/new, fork, resume, list, close",260,P1
+258,server,crates/server/src/methods/turn.rs,"turn/submit, interrupt, approve; streaming notifications",320,P1
+259,server,crates/server/src/methods/tools.rs,"tools/list, tools/call for host-side execution",220,P2
+260,server,crates/server/src/methods/config.rs,"config/read, config/write with validation",200,P2
+261,server,crates/server/src/auth.rs,Local socket/stdio trust model + optional token for TCP,180,P2
+262,server,crates/server/src/transport_stdio.rs,Newline-delimited stdio transport,160,P1
+263,server,crates/server/src/transport_ws.rs,WebSocket transport for desktop/IDE clients,240,P2
+264,server,crates/server/src/acp/mod.rs,"ACP agent endpoint: initialize, session, prompt turn",340,P2
+265,server,crates/server/src/acp/session_map.rs,Maps ACP sessions to core threads; cancellation semantics,220,P2
+266,server,crates/server/src/acp/permissions.rs,Bridges ACP permission requests to the policy engine,240,P2
+267,server,crates/server/src/sdk_schema.rs,Emits JSON schema + TS/Python type stubs for SDK authors,260,P3
+268,orchestrator,crates/orchestrator/src/lib.rs,"Facade: Orchestrator::run(plan) with config, budgets and cancellation handle",90,P2
+269,orchestrator,crates/orchestrator/src/dag.rs,"Task graph: nodes, edges, topo order, cycle detection, ready-set, critical path",280,P1
+270,orchestrator,crates/orchestrator/src/scheduler.rs,"Deterministic ready-queue: caps, priority, fairness, adaptive concurrency, budget pool",420,P2
+271,orchestrator,crates/orchestrator/src/leases.rs,"File write-set leases: conflict prevention, deadlock-free ordering, steal/expire",220,P2
+272,orchestrator,crates/orchestrator/src/worker.rs,Worker lifecycle: worktree + session + narrowed policy + prompt contract + cancel,380,P2
+273,orchestrator,crates/orchestrator/src/report.rs,"Structured worker report schema, validation, parent-facing summary extraction",240,P1
+274,orchestrator,crates/orchestrator/src/merge.rs,"Sequential rebase merge queue: 3-way merge, conflict policy, revert",360,P3
+275,orchestrator,crates/orchestrator/src/verify_gate.rs,"Per-merge gate: build/test/lint evidence, quarantine on failure",280,P3
+276,orchestrator,crates/orchestrator/src/board_model.rs,"State model for the live board (worker states, progress, tokens, cost)",220,P2
+277,ext,crates/ext/src/lib.rs,Extension host facade + enable/disable resolution,100,P1
+278,ext,crates/ext/src/skills/mod.rs,"Skill model: name, trigger description, allowed tools, budget",220,P2
+279,ext,crates/ext/src/skills/loader.rs,"SKILL.md discovery, frontmatter parse, lazy injection",280,P2
+280,ext,crates/ext/src/hooks/mod.rs,Hook event catalogue + matcher syntax,240,P1
+281,ext,crates/ext/src/hooks/exec.rs,"Hook execution: shell/webhook/verifier, timeouts, block semantics",320,P1
+282,ext,crates/ext/src/plugins/manifest.rs,"Plugin manifest schema, component types, version constraints",260,P3
+283,ext,crates/ext/src/plugins/verify.rs,Signature + provenance verification before load,240,P3
+284,ext,crates/ext/src/commands/custom.rs,Markdown-defined slash commands with argument schema,220,P2
+285,ext,crates/ext/src/agents_md.rs,Agent profile files (markdown) for subagent definitions,200,P2
+286,ext,crates/ext/src/watcher.rs,Config/skill file watching with debounce and safe reload,220,P3
+287,auth,crates/auth/src/lib.rs,Credential facade + provider selection,90,P1
+288,auth,crates/auth/src/keyring.rs,OS keychain wrapper with file fallback and 0600 perms,220,P1
+289,auth,crates/auth/src/oauth_pkce.rs,Browser + loopback callback PKCE flow,300,P1
+290,auth,crates/auth/src/device_code.rs,Headless/SSH device-code login,240,P2
+291,auth,crates/auth/src/token_store.rs,"Token cache, expiry, refresh scheduling, revocation",260,P1
+292,auth,crates/auth/src/service_account.rs,"CI mode: env/service-account credentials, no interactive prompts",200,P2
+293,git,crates/git/src/lib.rs,Repo discovery + facade,100,P1
+294,git,crates/git/src/repo.rs,"Open repo via gix, branch/HEAD/status summary for prompts",280,P1
+295,git,crates/git/src/diff.rs,Working-tree diff extraction for review mode and UI,260,P1
+296,git,crates/git/src/commit.rs,Commit creation with trailer attribution and signing passthrough,220,P1
+297,git,crates/git/src/worktree.rs,Create/remove ephemeral worktrees for parallel subagents,240,P2
+298,git,crates/git/src/checkpoint.rs,Shadow-git checkpoints per turn for undo/rollback,300,P2
+299,telemetry,crates/telemetry/src/lib.rs,Init + global subscriber + shutdown flush,120,P1
+300,telemetry,crates/telemetry/src/tracing_setup.rs,"Layered tracing: file ring buffer, stderr, env filters",220,P1
+301,telemetry,crates/telemetry/src/otel.rs,"OTLP export of spans (turn, tool, model call) with sampling",260,P2
+302,telemetry,crates/telemetry/src/metrics.rs,"Counters/histograms: latency, tokens, tool failures, cache hit rate",240,P2
+303,telemetry,crates/telemetry/src/privacy.rs,"Scrubber: paths, prompts, hostnames; explicit opt-in surface",260,P1
+304,telemetry,crates/telemetry/src/support_bundle.rs,One-command diagnostic bundle with redaction preview,220,P2
+305,testkit,crates/testkit/src/lib.rs,Test harness exports,60,P0
+306,testkit,crates/testkit/src/fixtures.rs,"Temp workspaces, sample repos, permission fixtures",260,P0
+307,testkit,crates/testkit/src/mock_provider.rs,"In-process fake model server (SSE, tool calls, failures)",320,P0
+308,testkit,crates/testkit/src/golden.rs,Transcript/golden comparison helpers for insta snapshots,200,P1
